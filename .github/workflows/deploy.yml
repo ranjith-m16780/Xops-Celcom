@@ -1,50 +1,54 @@
-name: 🚀 Deploy Task3 App to EC2
- 
+name: 🚀 Deploy Node.js App to EC2
+
 on:
   push:
     branches:
-      - main
- 
+      - main   # Trigger only on push to main branch
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
- 
+
     steps:
+      # Step 1: Checkout repo
       - name: Checkout Code
         uses: actions/checkout@v3
- 
+
+      # Step 2: Setup SSH
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key.pem
           chmod 600 ~/.ssh/deploy_key.pem
           ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
- 
-      - name: Deploy Task3 Code to EC2
+
+      # Step 3: Copy code to EC2
+      - name: Deploy Code to EC2
         run: |
-          rsync -avz -e "ssh -i ~/.ssh/deploy_key.pem" ./Task\ 3/ \
+          rsync -avz -e "ssh -i ~/.ssh/deploy_key.pem" ./ \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:/home/${{ secrets.SSH_USERNAME }}/app/
- 
+
+      # Step 4: Restart Node.js App using PM2
       - name: Restart App on EC2
         run: |
           ssh -i ~/.ssh/deploy_key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-            # Install Python and pip if not already
-            sudo yum install -y python3 python3-pip
- 
-            # Kill old process if running
-            pkill -f app.py || true
- 
-            # Navigate to app dir
+            set -e
             cd ~/app
- 
-            # Install requirements
-            if [ -f requirements.txt ]; then
-              pip3 install -r requirements.txt
-            else
-              pip3 install flask
+
+            # Install Node.js & npm if not installed
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt-get install -y nodejs
             fi
- 
-            # Run Flask on port 5000 (non-root safe)
-            nohup python3 app.py > app.log 2>&1 &
+
+            # Install PM2 globally
+            sudo npm install -g pm2
+
+            # Install project dependencies
+            npm install
+
+            # Restart app with PM2 (your main file = app.js/server.js/index.js)
+            pm2 delete app || true
+            pm2 start app.js --name app
+            pm2 save
           EOF
- 
