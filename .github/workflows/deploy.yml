@@ -1,33 +1,50 @@
-name: Deploy to EC2
-
+name: 🚀 Deploy Task3 App to EC2
+ 
 on:
   push:
     branches:
-      - main   # Run workflow when code is pushed to main branch
-
+      - main
+ 
 jobs:
   deploy:
-    runs-on: ubuntu-late
-
+    runs-on: ubuntu-latest
+ 
     steps:
-      - name: Checkout latest code
+      - name: Checkout Code
         uses: actions/checkout@v3
-
+ 
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Copy files to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} "mkdir -p ~/app"
-          rsync -avz --exclude '.git*' ./Task3/ ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:~/app/
-
-      - name: Restart Node.js App
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key.pem
+          chmod 600 ~/.ssh/deploy_key.pem
+          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
+ 
+      - name: Deploy Task3 Code to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} "
-            cd ~/app &&
-            npm install --production &&
-            pm2 restart app || pm2 start server.js --name app
-          "
+          rsync -avz -e "ssh -i ~/.ssh/deploy_key.pem" ./Task\ 3/ \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:/home/${{ secrets.SSH_USERNAME }}/app/
+ 
+      - name: Restart App on EC2
+        run: |
+          ssh -i ~/.ssh/deploy_key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            # Install Python and pip if not already
+            sudo yum install -y python3 python3-pip
+ 
+            # Kill old process if running
+            pkill -f app.py || true
+ 
+            # Navigate to app dir
+            cd ~/app
+ 
+            # Install requirements
+            if [ -f requirements.txt ]; then
+              pip3 install -r requirements.txt
+            else
+              pip3 install flask
+            fi
+ 
+            # Run Flask on port 5000 (non-root safe)
+            nohup python3 app.py > app.log 2>&1 &
+          EOF
  
