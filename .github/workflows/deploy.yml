@@ -1,4 +1,4 @@
-name: 🚀 Deploy Task3 Node.js App to EC2
+name: 🚀 Deploy Node.js App to EC2
 
 on:
   push:
@@ -14,24 +14,24 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Setup SSH Agent
+      # Step 2: Setup SSH agent
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 3: Create app directory on EC2
-      - name: Create app directory
+      # Step 3: Ensure app directory exists on EC2
+      - name: Create app directory on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} "mkdir -p ~/app"
 
-      # Step 4: Sync project files to EC2
-      - name: Copy project files
+      # Step 4: Copy project files to EC2
+      - name: Sync project files
         run: |
           rsync -avz --exclude '.git*' -e "ssh -o StrictHostKeyChecking=no" ./Task3/ \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:~/app/
 
-      # Step 5: Install Node.js, dependencies, and restart app
+      # Step 5: Install Node.js, dependencies, and restart app with PM2
       - name: Restart Node.js App on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
