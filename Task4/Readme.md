@@ -9,7 +9,14 @@ Provision an AWS EC2 instance with Terraform, then configure and deploy a web ap
 - Ansible installed
 - SSH key pair for EC2
 
+## Screenshots
+
+<img width="1521" height="624" alt="Screenshot 2025-08-26 141352" src="https://github.com/user-attachments/assets/34620a33-6e37-42a9-ad1b-47791506f1f8" />
+
+<img width="1910" height="986" alt="Screenshot 2025-08-26 141428" src="https://github.com/user-attachments/assets/59be83eb-5268-42e3-9d8c-b39b4dd774a0" />
+
 ## Steps
+
 
 ### 1. Provision EC2 with Terraform
 ```
