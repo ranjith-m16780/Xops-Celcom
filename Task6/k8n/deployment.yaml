@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: my-app
-          image: ranjith16780/app:latest
+          image: ranjith16780/app:4103936bddb38607851711fb1ae2525f44944703
           ports:
             - containerPort: 80
           resources:              # optional but good practice
