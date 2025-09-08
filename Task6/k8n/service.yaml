@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,4 +13,20 @@ spec:
       port: 80
       targetPort: 80
       nodePort: 30080     # set fixed port for kind
+=======
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  labels:
+    app: my-app
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080     # set fixed port for kind
+>>>>>>> a32eb8b45a6231bbfacdf955962de76714f5da43
   type: NodePort

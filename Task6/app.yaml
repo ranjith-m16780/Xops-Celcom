@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -15,4 +16,23 @@ spec:
   syncPolicy:
     automated:
       prune: true
+=======
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: xops-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ranjith-m16780/Xops-Celcom.git
+    targetRevision: main
+    path: Task6/k8n   # <-- corrected path
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+>>>>>>> a32eb8b45a6231bbfacdf955962de76714f5da43
       selfHeal: true

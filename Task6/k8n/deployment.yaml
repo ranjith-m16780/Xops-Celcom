@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,4 +26,33 @@ spec:
               memory: "128Mi"
             limits:
               cpu: "200m"
+=======
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  labels:
+    app: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app
+          image: ranjith16780/app:4103936bddb38607851711fb1ae2525f44944703
+          ports:
+            - containerPort: 80
+          resources:              # optional but good practice
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+>>>>>>> a32eb8b45a6231bbfacdf955962de76714f5da43
               memory: "256Mi"

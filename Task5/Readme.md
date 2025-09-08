@@ -13,6 +13,8 @@ Deploy a local Kubernetes cluster with kind and serve a custom NGINX page.
 ├── app.yaml
 ├── screenshots/
 ```
+## Screenshots
+<img width="1899" height="923" alt="Screenshot 2025-08-26 162930" src="https://github.com/user-attachments/assets/009ff2b0-39e6-4cd7-80d0-d414ff1040ee" />
 
 ## Steps
 
